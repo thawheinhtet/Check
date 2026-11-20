@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pick Check 100 | CDC</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f4f8;--tx:#0f172a;--mu:#64748b;--pn:#fff;--bd:#e5e7eb;
+  --ac:#0072ce;--ok:#16a34a;--okb:#e3f5e9;--br:#e11d48;--brb:#fde8ec;--wa:#f59e0b;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b0f17;--tx:#e8ecf3;--mu:#8b93a3;--pn:#131925;--bd:#242c3b;--okb:#12301f;--brb:#3a1420;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0f17;--tx:#e8ecf3;--mu:#8b93a3;--pn:#131925;--bd:#242c3b;--okb:#12301f;--brb:#3a1420;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px Inter,'Noto Sans Thai',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.mono{font-family:'JetBrains Mono',monospace}
+header{background:var(--pn);color:var(--tx);position:relative;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;display:flex;justify-content:space-between;align-items:center}
+header b{font-size:17px;display:block}
+header small{opacity:.85}
+.tabs{display:flex;overflow-x:auto;background:var(--pn);border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:5}
+.tabs button{border:0;border-radius:10px;margin:5px;background:none;padding:8px 2px;flex:1;min-width:84px;font-size:11px;font-weight:600;color:var(--mu)}
+.tabs button.on{background:color-mix(in srgb,var(--ac) 14%,transparent);color:var(--ac)}
+main{padding:14px;max-width:1240px;margin:auto}
+.tab{display:none}.tab.on{display:block}
+button,select,input,textarea{font:inherit;color:var(--tx);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:9px 12px}
+button{cursor:pointer;font-weight:600}
+.pri{background:var(--ac);border-color:var(--ac);color:#fff}
+.big{width:100%;padding:14px;margin-top:8px}
+.card{background:var(--pn);border-radius:16px;padding:14px;box-shadow:0 1px 8px rgba(0,0,0,.07);margin-bottom:12px}
+.w{max-width:720px;margin:0 auto 12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp{justify-content:space-between}
+.mu{color:var(--mu)}.ok{color:var(--ok)}.bad{color:var(--br)}.wa{color:var(--wa)}
+.pill{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--bd)}
+.pill.gr{background:var(--okb);color:var(--ok)}
+.pill.rd{background:var(--brb);color:var(--br)}
+.pill.am{background:#fef3c7;color:#b45309}
+.drop{display:block;text-align:center;border:2px dashed var(--bd);border-radius:12px;padding:14px;margin-top:8px;cursor:pointer;color:var(--ac)}
+#scan{flex:1;font-family:'JetBrains Mono',monospace}
+video{width:100%;max-height:240px;border-radius:10px;background:#000;display:none;margin-top:8px}
+.bar{height:6px;background:var(--bd);border-radius:4px;overflow:hidden;margin:10px 0}
+.bar i{display:block;height:100%;background:var(--ok)}
+.it{display:grid;grid-template-columns:1fr 50px 46px 46px;gap:8px;align-items:center;background:var(--bg);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+.it.g{background:var(--okb)}.it.r{background:var(--brb)}.it.dup{border-left:4px solid var(--wa)}
+.it .q{text-align:center;font-size:17px;color:var(--ac)}
+.it button{padding:10px 0}
+.gb{background:var(--ok)!important;color:#fff!important;border-color:var(--ok)!important}
+.rb{background:var(--br)!important;color:#fff!important;border-color:var(--br)!important}
+.hd{font-size:12px;color:var(--mu);margin-bottom:6px}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));margin-bottom:12px}
+.k{background:var(--pn);border-radius:14px;padding:12px 14px;box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.k.b{background:var(--ac);color:#fff}
+.k small{opacity:.75}
+.k .v{font-size:28px;font-weight:700;margin:2px 0}
+.cols{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}
+th{color:var(--mu);font-size:11px;font-weight:500}
+.wrap{overflow-x:auto}
+.chart{display:flex;align-items:flex-end;gap:6px;height:170px;position:relative;border-bottom:1px solid var(--bd)}
+.chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;text-align:center;font-size:10px;color:var(--mu)}
+.chart b{display:block;background:var(--ok);border-radius:4px 4px 0 0;min-height:1px}
+.chart b.r{background:var(--br)}
+.tg{position:absolute;left:0;right:0;border-top:2px dashed var(--tx);opacity:.6}
+.f{border-radius:99px;padding:6px 14px}
+.f.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+body[data-ty=XD]{--ac:#0072ce}
+body[data-ty=IMP]{--ac:#e88b00}
+body[data-ty=PTL]{--ac:#dc2331}
+header::after,body.home::before{content:"";display:block;height:5px;background:linear-gradient(90deg,#0072ce 33.3%,#e88b00 33.3% 66.6%,#dc2331 66.6%)}
+header::after{position:absolute;left:0;right:0;bottom:0}
+body.home::before{height:6px}
+.mk{height:36px;margin-right:4px}
+body.home header,body.home .tabs{display:none!important}
+.hubw{max-width:1180px;margin:auto;display:grid;gap:18px;grid-template-columns:minmax(260px,340px) 1fr;align-items:start}
+@media(max-width:820px){.hubw{grid-template-columns:1fr}}
+.side{position:sticky;top:14px}
+.lg{background:#fff;border-radius:16px;padding:10px 14px;text-align:center;box-shadow:0 1px 8px rgba(0,0,0,.08)}
+.lg img{max-width:100%;height:auto}
+.clk{font-weight:700;margin:4px 0}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mini div{background:var(--bg);border-radius:12px;padding:10px}
+.mini b{font-size:26px;display:block}
+.lane{display:grid;grid-template-columns:60px 1fr auto;gap:16px;align-items:center;background:var(--pn);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 1px 8px rgba(0,0,0,.08);border-left:8px solid var(--lc);cursor:pointer;transition:.15s}
+.lane:hover{box-shadow:0 8px 22px rgba(0,0,0,.16);transform:translateY(-2px)}
+.dr{width:54px;height:62px;background:var(--lc);border-radius:50% 50% 50% 50%/62% 62% 38% 38%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:16px;transform:rotate(-8deg)}
+.go{background:var(--lc);color:#fff;border:0;border-radius:99px;padding:12px 22px;font-weight:700}
+@media(max-width:560px){.lane{grid-template-columns:50px 1fr}.lane .go{grid-column:1/-1}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="row">
+    <img class="mk" alt="CJ" src="data:image/png;base64,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">
+    <button id="bk" onclick="tab('home')" style="display:none">←</button>
+    <div>
+      <b id="ht">Pick Check 100</b>
+      <small>CDC · CJ Logistics</small>
+    </div>
+  </div>
+  <div class="row">
+    <span id="lk" class="pill gr">● Offline / Local</span>
+    <button onclick="theme()" style="border-radius:99px" title="Toggle theme">◐</button>
+  </div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+
+<main>
+  <!-- SCAN & CHECK TAB -->
+  <section class="tab" id="t-scan">
+    <div class="card w">
+      <div class="pill mu" id="pull" style="display:block;margin-bottom:8px">No data yet – go to Import Data</div>
+      <button class="pri big" style="margin:0" onclick="cam()">Open camera – scan Outbound Label</button>
+      <video id="vid" playsinline muted></video>
+      <div class="row" style="margin-top:8px;flex-wrap:nowrap">
+        <input id="scan" placeholder="or type OLPN number" autocomplete="off">
+        <button onclick="go()">Search</button>
+      </div>
+      <label class="drop" id="drop">
+        <b>Upload QR image</b><br>
+        <small class="mu">Tap to choose / drag &amp; drop / Ctrl+V paste</small>
+        <input type="file" accept="image/*" hidden id="img">
+      </label>
+      <input id="emp" placeholder="Checker ID" style="width:100%;margin-top:8px">
+      <label class="mu" style="display:block;margin-top:8px">
+        <input type="checkbox" id="ap"> Auto-print check sheet after Complete
+      </label>
+    </div>
+    <div id="res"></div>
+  </section>
+
+  <!-- STATUS TAB -->
+  <section class="tab" id="t-status">
+    <div class="w" style="max-width:980px">
+      <input id="sq" placeholder="Search Outbound Label or Store no." oninput="status()" style="width:100%;margin-bottom:8px">
+      <div class="row" style="margin-bottom:8px">
+        <span class="mu">Print layout</span>
+        <select id="pl" onchange="S.cfg.pl=this.value;save()">
+          <option value="landscape">Landscape</option>
+          <option value="portrait">Portrait</option>
+        </select>
+      </div>
+      <div class="row" id="flt" style="margin-bottom:8px"></div>
+      <div class="card wrap" id="stb"></div>
+    </div>
+  </section>
+
+  <!-- HOME, DASHBOARD, PICKING KPI TABS -->
+  <section class="tab" id="t-home"></section>
+  <section class="tab" id="t-dash"></section>
+  <section class="tab" id="t-pk"></section>
+
+  <!-- IMPORT & BACKUP TAB -->
+  <section class="tab" id="t-up">
+    <div class="cols">
+      <div class="card">
+        <h3>1 · OLPN pending file</h3>
+        <p class="mu">Only status <b>In Packing</b> / <b>Packed</b> are used. Checked oLPNs: <b>XD manual pick</b> (L890…), <b>Import manual pick</b> (OFS…) and <b>Put To Light</b> pallets. D890 / DPL / DFS are ignored. Needs Picker, Order Type and Picked Date columns.</p>
+        <input type="file" accept=".xlsx,.xls,.csv" onchange="load('olpn',this)">
+        <div id="map-olpn"></div>
+        <p id="st-olpn" class="mu"></p>
+      </div>
+
+      <div class="card">
+        <h3>2 · Team Share &amp; Backup (JSON)</h3>
+        <p class="mu">All data is saved locally on this browser. To share loaded OLPNs or check history with teammates across devices, export a backup file or import one.</p>
+        <div class="row" style="margin-top:8px">
+          <button class="pri" onclick="exportBackup()">⬇ Export Backup (.json)</button>
+          <label class="button" style="cursor:pointer;border:1px solid var(--bd);border-radius:10px;padding:9px 12px;font-weight:600;background:var(--pn)">
+            ⬆ Import Backup (.json)
+            <input type="file" accept=".json" hidden onchange="importBackup(this)">
+          </label>
+        </div>
+        <p id="st-bak" class="mu" style="margin-top:8px"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>3 · Data Maintenance</h3>
+      <p class="mu">Reset stored check records or clear all local cached data.</p>
+      <div class="row">
+        <button onclick="clearChecks()">Clear all check records</button>
+        <button class="rb" onclick="resetAll()">Factory reset local data</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const S = {
+  boh: [],
+  olpn: [],
+  checks: [],
+  cfg: { t: 627, h: 5, s: 'day', d: '', pl: 'landscape' },
+  up: {}
+};
+
+const RAW = { boh: { h: [], r: [] }, olpn: { h: [], r: [] } };
+const MAP = { boh: {}, olpn: {} };
+
+const F = {
+  boh: {
+    store: ['storeno','store','customer'],
+    item: ['item','sku','product'],
+    desc: ['description','desc'],
+    qty: ['bohqty','boh','pendingqty','qty','cases','cs'],
+    loc: ['location','loc','zone']
+  },
+  olpn: {
+    lpn: ['olpns','olpn','lpn','containerno'],
+    store: ['storeno','store'],
+    order: ['orderno','orderid','order'],
+    item: ['item','sku','product'],
+    desc: ['itemdescription','description','productname','desc'],
+    qty: ['orderqty','qty','cases','cs'],
+    status: ['status','lpnstatus'],
+    loc: ['currentlocation','location','loc'],
+    pallet: ['palletid','pallet','parentlpn'],
+    picker: ['picker','pickerid','pickuser','pickedby'],
+    otype: ['ordertype'],
+    pdate: ['pickeddate','pickdate','pickedtime','pickedon']
+  }
+};
+
+const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+const tm = t => t && t < 1e20 ? new Date(t).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '–';
+const lt = (l, p) => {
+  l = String(l || '').toUpperCase();
+  p = String(p || '').toUpperCase();
+  if (p.startsWith('S') || l.startsWith('S')) return 'Put To Light Pallet';
+  if (l.startsWith('D890')) return 'XD Full Pallet';
+  if (l.startsWith('DPL0')) return 'NM Full Pallet';
+  if (l.startsWith('L890')) return 'XD Manual Pick';
+  if (l.startsWith('OFS')) return 'NM Manual Pick';
+  if (l.startsWith('DFS')) return 'NM Selective Pick';
+  if (l.startsWith('CD')) return 'Boom Conveyor';
+  if (l.startsWith('00000')) return 'Auto Pack';
+  if (/^[0-9]/.test(l)) return 'Infeed';
+  return 'Other';
+};
+
+/* ---------- IndexedDB Persistence ---------- */
+function save() {
+  try {
+    const q = indexedDB.open('pc100', 1);
+    q.onupgradeneeded = () => q.result.createObjectStore('kv');
+    q.onsuccess = () => {
+      try {
+        q.result.transaction('kv', 'readwrite').objectStore('kv').put(S, 'S');
+      } catch (e) {}
+    };
+  } catch (e) {}
+}
+
+function restore(cb) {
+  try {
+    const q = indexedDB.open('pc100', 1);
+    q.onupgradeneeded = () => q.result.createObjectStore('kv');
+    q.onsuccess = () => {
+      try {
+        const g = q.result.transaction('kv').objectStore('kv').get('S');
+        g.onsuccess = () => {
+          if (g.result) Object.assign(S, g.result);
+          cb();
+        };
+        g.onerror = cb;
+      } catch (e) { cb(); }
+    };
+    q.onerror = cb;
+  } catch (e) { cb(); }
+}
+
+function theme() {
+  const d = document.documentElement;
+  const c = d.dataset.theme || (matchMedia('(prefers-color-scheme:light)').matches ? 'light' : 'dark');
+  d.dataset.theme = c === 'dark' ? 'light' : 'dark';
+}
+
+/* ---------- Navigation ---------- */
+let CT = 'scan', TY = null;
+const TN = { XD: 'XD Picking Check', IMP: 'Import Picking Check', PTL: 'Put To Light Check' };
+const TABS = [['scan', '⌗', 'Scan & Check'], ['status', '☰', 'Status'], ['dash', '◔', 'Check 100 KPI'], ['pk', '▤', 'Picking KPI']];
+
+$('tabs').innerHTML = TABS.map(t => `<button data-t="${t[0]}" onclick="tab('${t[0]}')">${t[1]}<br>${t[2]}</button>`).join('');
+
+function tab(t) {
+  CT = t;
+  document.body.classList.toggle('home', t === 'home');
+  document.body.dataset.ty = (t === 'home' || t === 'up') ? '' : (TY || '');
+  $('tabs').style.display = (t === 'home' || t === 'up') ? 'none' : 'flex';
+  $('bk').style.display = t === 'home' ? 'none' : 'inline-block';
+  $('ht').textContent = t === 'home' ? 'Pick Check 100' : t === 'up' ? 'Import Data' : TN[TY];
+  document.querySelectorAll('.tab').forEach(e => e.classList.toggle('on', e.id === 't-' + t));
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  if (t === 'dash') dash();
+  if (t === 'status') status();
+  if (t === 'pk') pick(TY);
+  if (t === 'home') hub();
+  if (t === 'scan') { pull(); $('scan').focus(); }
+}
+
+const pull = () => {
+  $('pull').textContent = S.up.olpn
+    ? 'OLPN data: ' + S.up.olpn + ' · ' + S.olpn.filter(o => o.grp === TY).length + ' labels'
+    : 'No data yet – go to Import Data';
+};
+
+/* ---------- Excel / CSV Import ---------- */
+function load(k, el) {
+  const f = el.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+    RAW[k] = { h: Object.keys(rows[0] || {}), r: rows };
+    MAP[k] = {};
+    for (const [fd, al] of Object.entries(F[k])) {
+      const hs = RAW[k].h;
+      MAP[k][fd] = hs.find(h => al.includes(norm(h))) || hs.find(h => al.some(a => norm(h).includes(a))) || '';
+    }
+    S.up[k] = f.name + ' · ' + new Date().toLocaleString('en-GB');
+    build(k);
+  };
+  r.readAsArrayBuffer(f);
+  el.value = '';
+}
+
+function build(k) {
+  const m = MAP[k], g = (r, f) => m[f] ? r[m[f]] : '';
+  $('map-' + k).innerHTML = '<div class="row" style="margin-top:8px">' + Object.keys(F[k]).map(f =>
+    `<label class="mu">${f}<br><select onchange="MAP.${k}.${f}=this.value;build('${k}')"><option value="">—</option>${RAW[k].h.map(h => `<option ${h === m[f] ? 'selected' : ''}>${esc(h)}</option>`).join('')}</select></label>`
+  ).join('') + '</div>';
+
+  const mp = {};
+  let kept = 0;
+  const pd = v => {
+    if (!v) return 0;
+    if (v instanceof Date) return +v;
+    if (typeof v === 'number') return Math.round((v - 25569) * 864e5);
+    const mt = String(v).match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})[ T]*(\d{1,2})?:?(\d{2})?:?(\d{2})?/);
+    return mt ? +new Date(+mt[3] < 100 ? 2000 + +mt[3] : +mt[3], mt[2] - 1, mt[1], mt[4] || 0, mt[5] || 0, mt[6] || 0) : Date.parse(v) || 0;
+  };
+
+  RAW.olpn.r.forEach(r => {
+    const st = norm(g(r, 'status'));
+    if (st !== 'inpacking' && st !== 'packed') return;
+    const l = String(g(r, 'lpn')).trim().toUpperCase();
+    if (!l) return;
+    const ty = lt(l, g(r, 'pallet'));
+    if (!['XD Manual Pick', 'NM Manual Pick', 'Put To Light Pallet'].includes(ty)) return;
+    kept++;
+    const ot = String(g(r, 'otype')).trim();
+    const d = pd(g(r, 'pdate'));
+    const o = mp[l] || (mp[l] = {
+      lpn: l,
+      store: String(g(r, 'store')).trim(),
+      status: String(g(r, 'status')).trim(),
+      type: ty,
+      qty: 0,
+      items: [],
+      picker: String(g(r, 'picker')).trim() || '—',
+      grp: ty === 'Put To Light Pallet' ? 'PTL' : /xd|cross/i.test(ot) ? 'XD' : /imp/i.test(ot) ? 'IMP' : ty.startsWith('XD') ? 'XD' : 'IMP',
+      pd: 0
+    });
+    if (d && (!o.pd || d < o.pd)) o.pd = d;
+    o.qty += +g(r, 'qty') || 0;
+    o.items.push({ item: String(g(r, 'item')).trim(), desc: g(r, 'desc'), qty: +g(r, 'qty') || 0 });
+  });
+
+  S.olpn = Object.values(mp);
+  S.filt = { all: RAW.olpn.r.length, kept };
+  $('st-' + k).textContent = S[k].length + ' labels loaded · ' + S.up[k] + (S.filt ? ' · kept ' + S.filt.kept + ' of ' + S.filt.all + ' rows' : '');
+  save();
+}
+
+/* ---------- JSON Backup / Share ---------- */
+function exportBackup() {
+  const payload = JSON.stringify({ exportedAt: new Date().toISOString(), data: S });
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'PickCheck100_Backup_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  $('st-bak').textContent = 'Backup exported at ' + new Date().toLocaleTimeString('en-GB');
+}
+
+function importBackup(el) {
+  const f = el.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const incoming = parsed.data || parsed;
+      if (!Array.isArray(incoming.olpn) || !Array.isArray(incoming.checks)) {
+        return alert('Invalid backup file format.');
+      }
+      Object.assign(S, incoming);
+      save();
+      $('st-bak').textContent = 'Loaded ' + S.olpn.length + ' labels & ' + S.checks.length + ' checks from ' + f.name;
+      if (S.olpn.length) {
+        $('st-olpn').textContent = S.olpn.length + ' labels loaded · ' + (S.up.olpn || f.name);
+      }
+      alert('Backup imported successfully.');
+    } catch (err) {
+      alert('Could not read backup file: ' + err.message);
+    }
+  };
+  r.readAsText(f);
+  el.value = '';
+}
+
+function clearChecks() {
+  if (!confirm('Delete ALL check records on this device?')) return;
+  S.checks = [];
+  save();
+  alert('Check records cleared.');
+}
+
+function resetAll() {
+  if (!confirm('Factory reset ALL local data (OLPNs, checks, settings)?')) return;
+  S.boh = [];
+  S.olpn = [];
+  S.checks = [];
+  S.up = {};
+  delete S.filt;
+  save();
+  location.reload();
+}
+
+/* ---------- Scan & Check ---------- */
+let CUR = null, stream;
+const latest = () => {
+  const m = {};
+  S.checks.slice().sort((a, b) => (a.ts || 0) - (b.ts || 0)).forEach(c => m[c.lpn] = c);
+  return m;
+};
+
+function go() {
+  const v = $('scan').value.trim();
+  if (v) open(v);
+}
+$('scan').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+
+function open(code) {
+  code = String(code).trim().toUpperCase();
+  $('scan').value = code;
+  tab('scan');
+  const o = S.olpn.find(x => x.lpn === code);
+  if (!o) {
+    CUR = null;
+    $('res').innerHTML = `<div class="card w bad"><b>${esc(code)}</b> not found. Only In Packing / Packed XD manual, Import manual and Put To Light labels are loaded.</div>`;
+    return;
+  }
+  if (TY && o.grp !== TY) {
+    CUR = null;
+    $('res').innerHTML = `<div class="card w"><b>${esc(code)}</b> belongs to <b>${TN[o.grp]}</b>.<br><button class="pri" style="margin-top:8px" onclick="enter('${o.grp}');open('${code}')">Switch to ${TN[o.grp]}</button></div>`;
+    return;
+  }
+  CUR = { o, st: o.items.map(() => null) };
+  render();
+}
+
+function render() {
+  const { o, st } = CUR;
+  const cnt = o.items.reduce((m, i) => (m[i.item] = (m[i.item] || 0) + 1, m), {});
+  const ok = st.filter(v => v === 1).length;
+  const sh = st.filter(v => v === 0).length;
+  const nc = st.length - ok - sh;
+  const pr = latest()[o.lpn];
+  const pctDone = st.length ? ((ok + sh) / st.length * 100) : 0;
+
+  $('res').innerHTML = `
+    <div class="card w">
+      <div class="row sp">
+        <div>
+          <h2 class="mono" style="margin:0;color:var(--ac)">${esc(o.lpn)}</h2>
+          <small class="mu">Store: ${esc(o.store)} · ${o.type} · Picker ${esc(o.picker)}</small>
+          ${pr ? `<br><small class="wa">Already checked ${tm(pr.ts)} → ${pr.res === 'OK' ? 'Complete' : 'Back to Picking'}</small>` : ''}
+        </div>
+        <span class="pill ${nc ? 'am' : sh ? 'rd' : 'gr'}">${nc ? 'Checking…' : sh ? 'Back to Picking' : 'Complete – to Outbound'}</span>
+      </div>
+      <div class="bar"><i style="width:${pctDone}%"></i></div>
+      <div class="row sp hd">
+        <span>Product</span>
+        <label>Case &nbsp;<input type="checkbox" ${st.length && ok === st.length ? 'checked' : ''} onchange="allOk(this.checked)"> All complete</label>
+      </div>
+      ${o.items.map((i, k) => `
+        <div class="it ${st[k] === 1 ? 'g' : st[k] === 0 ? 'r' : ''} ${cnt[i.item] > 1 ? 'dup' : ''}">
+          <div>
+            <small class="mu mono">${esc(i.item)} ${cnt[i.item] > 1 ? '<b class="wa">Dup</b>' : ''}</small>
+            <div>${esc(i.desc)}</div>
+          </div>
+          <b class="q">${i.qty}</b>
+          <button class="${st[k] === 1 ? 'gb' : ''}" onclick="mark(${k},1)">✓</button>
+          <button class="${st[k] === 0 ? 'rb' : ''}" onclick="mark(${k},0)">✗</button>
+        </div>
+      `).join('')}
+      <div class="row sp">
+        <span>Complete <b class="ok">${ok}</b> &nbsp;Short <b class="bad">${sh}</b> &nbsp;Not checked <b>${nc}</b></span>
+        <span>${st.length} items · Total Case <b>${o.qty}</b></span>
+      </div>
+      <button class="pri big" onclick="saveCur()">Save check result</button>
+      <button class="big" onclick="closeCur()">Close / scan next</button>
+    </div>`;
+}
+
+const mark = (k, v) => { CUR.st[k] = v; render(); };
+const allOk = c => { CUR.st = CUR.st.map(() => c ? 1 : null); render(); };
+
+function saveCur() {
+  const { o, st } = CUR;
+  if (!st.length) return alert('This label has no items.');
+  if (st.includes(null)) return alert('Please check every item (✓ or ✗) before saving.');
+  const res = st.every(v => v === 1) ? 'OK' : 'RET';
+  const shortIdx = st.map((v, i) => v === 0 ? i : -1).filter(i => i >= 0);
+  const c = {
+    lpn: o.lpn,
+    store: o.store,
+    type: o.type,
+    qty: o.qty,
+    res,
+    items: o.items.length,
+    short: shortIdx.map(i => o.items[i].item),
+    shortIdx,
+    emp: $('emp').value.trim(),
+    picker: o.picker,
+    grp: o.grp,
+    ts: Date.now()
+  };
+  c.id = c.lpn + '_' + c.ts;
+  S.checks.push(c);
+  save();
+  $('res').innerHTML = `
+    <div class="card w">
+      <h3 class="${res === 'OK' ? 'ok' : 'bad'}" style="margin:0">${esc(o.lpn)} saved: ${res === 'OK' ? 'Complete – to Outbound' : 'Back to Picking'}</h3>
+      <button onclick="prn('${o.lpn}')" style="margin-top:8px">🖨 Print check sheet</button>
+    </div>`;
+  if (res === 'OK' && $('ap').checked) setTimeout(() => prn(o.lpn), 150);
+  CUR = null;
+  $('scan').value = '';
+  $('scan').focus();
+}
+
+function closeCur() {
+  CUR = null;
+  $('res').innerHTML = '';
+  $('scan').value = '';
+  $('scan').focus();
+}
+
+/* ---------- Barcode / QR Image & Camera ---------- */
+async function dec(src) {
+  if (!('BarcodeDetector' in window)) {
+    return alert('This browser cannot read codes from images/camera. Use Chrome on Android/PC, a handheld scanner, or type the number.');
+  }
+  try {
+    const r = await new BarcodeDetector().detect(src);
+    r[0] ? open(r[0].rawValue) : alert('No code found in image');
+  } catch (e) {
+    alert('Could not read image');
+  }
+}
+
+$('img').onchange = async e => {
+  if (e.target.files[0]) dec(await createImageBitmap(e.target.files[0]));
+  e.target.value = '';
+};
+$('drop').ondragover = e => e.preventDefault();
+$('drop').ondrop = async e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (f) dec(await createImageBitmap(f));
+};
+addEventListener('paste', async e => {
+  const f = [...(e.clipboardData?.files || [])][0];
+  if (f && f.type.startsWith('image')) dec(await createImageBitmap(f));
+});
+
+async function cam() {
+  const v = $('vid');
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    v.style.display = 'none';
+    return;
+  }
+  if (!('BarcodeDetector' in window)) {
+    return alert('Camera scan needs Chrome. Use a handheld scanner or type the number.');
+  }
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    v.srcObject = stream;
+    v.style.display = 'block';
+    await v.play();
+    const d = new BarcodeDetector();
+    const loop = async () => {
+      if (!stream) return;
+      try {
+        const b = await d.detect(v);
+        if (b[0]) {
+          navigator.vibrate && navigator.vibrate(80);
+          stream.getTracks().forEach(t => t.stop());
+          stream = null;
+          v.style.display = 'none';
+          open(b[0].rawValue);
+          return;
+        }
+      } catch (e) {}
+      requestAnimationFrame(loop);
+    };
+    loop();
+  } catch (e) {
+    alert('Camera not available (requires HTTPS on GitHub Pages)');
+  }
+}
+
+/* ---------- Status Tab ---------- */
+let FLT = 'all';
+const FL = [['all', 'All'], ['pend', 'Pending'], ['ok', 'Complete'], ['ret', 'Back to Picking'], ['np', 'Done · not printed']];
+const fl = r => FLT === 'all' || (FLT === 'pend' ? !r.c : FLT === 'ok' ? r.c && r.c.res === 'OK' : FLT === 'np' ? r.c && r.c.res === 'OK' && !r.c.printed : r.c && r.c.res === 'RET');
+
+function status() {
+  const q = $('sq').value.trim().toUpperCase(), lp = latest();
+  $('flt').innerHTML = FL.map(f => `<button class="f ${FLT === f[0] ? 'on' : ''}" onclick="FLT='${f[0]}';status()">${f[1]}</button>`).join('');
+  const rows = S.olpn.filter(o => o.grp === TY).map(o => ({ o, c: lp[o.lpn] })).filter(r => fl(r) && (!q || r.o.lpn.includes(q) || String(r.o.store).includes(q)));
+  $('stb').innerHTML = `
+    <table>
+      <tr><th>Outbound Label</th><th>Store</th><th>Type</th><th>Items</th><th>Status</th><th>Checked at</th><th>Print</th></tr>
+      ${rows.slice(0, 300).map(({ o, c }) => `
+        <tr style="cursor:pointer" onclick="open('${o.lpn}')">
+          <td class="mono">${esc(o.lpn)}</td>
+          <td>${esc(o.store)}</td>
+          <td>${o.grp}</td>
+          <td>${c ? o.items.length : 0}/${o.items.length}</td>
+          <td><span class="pill ${!c ? 'am' : c.res === 'OK' ? 'gr' : 'rd'}">${!c ? 'Pending' : c.res === 'OK' ? 'Complete' : 'Back to Picking'}</span></td>
+          <td>${c ? tm(c.ts) : '-'}</td>
+          <td>${c ? `<button onclick="event.stopPropagation();prn('${o.lpn}')">${c.printed ? 'Reprint' : 'Print'}</button>` : ''}</td>
+        </tr>
+      `).join('') || '<tr><td colspan="7" class="mu">No data</td></tr>'}
+    </table>
+    <small class="mu">${rows.length} labels${rows.length > 300 ? ' (showing 300)' : ''}</small>`;
+}
+
+/* ---------- Dashboards & Print ---------- */
+function rng() {
+  const a = new Date(S.cfg.d + 'T00:00:00').getTime() + (S.cfg.s === 'day' ? 8 : 20) * 36e5;
+  return [a, a + 12 * 36e5];
+}
+const setc = (k, v) => {
+  S.cfg[k] = (k === 't' || k === 'h' || k === 'pt') ? (+v || 1) : v;
+  if (TY && ['t', 'h', 'pt'].includes(k)) S.cfg[k + TY] = S.cfg[k];
+  save();
+  tab(CT);
+};
+const KC = (l, v, s, c = '', u = '') => `<div class="k ${c === 'b' ? 'b' : ''}"><small>${l}</small><div class="v">${v}<small style="font-size:14px"> ${u}</small></div><small>${s}</small></div>`;
+
+function pick(g) {
+  const dk = o => new Date(o.pd).toLocaleDateString('en-GB');
+  const A = S.olpn.filter(o => o.grp === g && o.pd);
+  const ds = [...new Set(A.slice().sort((a, b) => a.pd - b.pd).map(dk))];
+  const key = 'day' + g;
+  if (!S[key] || (S[key] !== 'ALL' && !ds.includes(S[key]))) S[key] = ds[ds.length - 1] || 'ALL';
+
+  const L = A.filter(o => S[key] === 'ALL' || dk(o) === S[key]);
+  const T = S.cfg.pt || 300, P = {}, H = {};
+
+  L.forEach(o => {
+    const p = P[o.picker] || (P[o.picker] = { id: o.picker, n: 0, cs: 0, a: 1e20, b: 0 });
+    p.n++; p.cs += o.qty; p.a = Math.min(p.a, o.pd); p.b = Math.max(p.b, o.pd);
+    const h = new Date(o.pd).getHours();
+    const e = H[h] || (H[h] = { n: 0, cs: 0, p: new Set() });
+    e.n++; e.cs += o.qty; e.p.add(o.picker);
+  });
+
+  const R = Object.values(P).map(p => {
+    const h = Math.max(.25, (p.b - p.a) / 36e5);
+    return { ...p, h, r: p.b > p.a ? p.cs / h : 0 };
+  }).sort((x, y) => y.cs - x.cs);
+  (window._pk = window._pk || {})[g] = R;
+
+  const hk = Object.keys(H).map(Number).sort((a, b) => a - b);
+  const hs = [];
+  if (hk.length) for (let h = hk[0]; h <= hk[hk.length - 1]; h++) hs.push(h);
+  const E = h => H[h] || { n: 0, cs: 0, p: new Set() };
+  const mx = Math.max(1, T, ...hs.map(h => E(h).cs));
+  const tot = L.reduce((s, o) => s + o.qty, 0);
+  const rr = R.filter(p => p.r > 0);
+  const avg = rr.length ? rr.reduce((s, p) => s + p.r, 0) / rr.length : 0;
+  const pk = hs.length ? hs.reduce((m, h) => E(h).cs > E(m).cs ? h : m, hs[0]) : null;
+  const pct = v => `<span class="pill ${v >= 100 ? 'gr' : 'rd'}">${Math.round(v)}%</span>`;
+
+  $('t-pk').innerHTML = `
+    <div class="card row sp">
+      <b style="font-size:18px">${TN[g].replace(" Check", "")} · Picking KPI</b>
+      <div class="row">
+        <label class="mu">Picked date <select onchange="S['${key}']=this.value;pick('${g}')">${['ALL', ...ds].map(d => `<option ${d === S[key] ? 'selected' : ''}>${d}</option>`).join('')}</select></label>
+        <span class="mu">Target CS/hr</span>
+        <input type="number" value="${T}" style="width:90px" onchange="setc('pt',this.value)">
+        <button class="pri" onclick="xl()">Export Excel</button>
+      </div>
+    </div>
+    ${L.length ? '' : '<div class="card mu">No ' + g + ' picking data. Upload the OLPN file in Import Data (needs Picker, Order Type and Picked Date).</div>'}
+    <div class="grid">
+      ${KC(g + ' labels picked', L.length, 'In Packing + Packed', 'b', 'LPN')}
+      ${KC('Cases picked', tot.toLocaleString(), 'sum of Qty', '', 'CS')}
+      ${KC('Active pickers', R.length, 'avg ' + avg.toFixed(1) + ' CS/hr each')}
+      ${KC('Peak hour', pk === null ? '–' : String(pk).padStart(2, '0') + ':00', pk === null ? '' : E(pk).cs.toLocaleString() + ' CS')}
+    </div>
+    <div class="cols">
+      <div class="card">
+        <b>Hourly · by Picked Date</b> <small class="mu">bars = cases (CS) · dashed = target</small>
+        <div class="chart" style="margin-top:10px">
+          ${hs.map(h => `<div><small>${E(h).n || ''}</small><b style="height:${E(h).cs / mx * 120}px"></b><span>${String(h).padStart(2, '0')}:00</span></div>`).join('')}
+          <span class="tg" style="bottom:${T / mx * 120 + 17}px"></span>
+        </div>
+        <div class="wrap">
+          <table>
+            <tr><th>Hour</th><th>Labels</th><th>CS</th><th>Pickers</th><th>CS/picker</th><th>% target</th></tr>
+            ${hs.map(h => {
+              const e = E(h);
+              return `<tr><td>${String(h).padStart(2, '0')}:00–${String((h + 1) % 24).padStart(2, '0')}:00</td><td>${e.n}</td><td>${e.cs.toLocaleString()}</td><td>${e.p.size}</td><td>${e.p.size ? Math.round(e.cs / e.p.size) : 0}</td><td>${pct(e.cs / T * 100)}</td></tr>`;
+            }).join('')}
+            <tr><td><b>Total</b></td><td>${L.length}</td><td>${tot.toLocaleString()}</td><td>${R.length}</td><td></td><td></td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card wrap">
+        <b>Picker KPI (by Picker ID)</b>
+        <table>
+          <tr><th>#</th><th>Picker</th><th>Labels</th><th>CS</th><th>First</th><th>Last</th><th>Hours</th><th>CS/hr</th></tr>
+          ${R.map((p, i) => `<tr><td>${i + 1}</td><td><b>${esc(p.id)}</b></td><td>${p.n}</td><td><b>${p.cs}</b></td><td>${tm(p.a)}</td><td>${tm(p.b)}</td><td>${p.h.toFixed(1)}</td><td class="ok">${p.r.toFixed(1)}</td></tr>`).join('') || '<tr><td colspan="8" class="mu">–</td></tr>'}
+        </table>
+      </div>
+    </div>`;
+}
+
+function prn(l) {
+  const c = latest()[l], o = S.olpn.find(x => x.lpn === l);
+  if (!c || !o) return alert('Save the check first');
+  const land = (S.cfg.pl || 'landscape') === 'landscape';
+  const sh = c.short || [], shIdx = c.shortIdx || null;
+  const isShort = (item, k) => shIdx ? shIdx.includes(k) : sh.includes(item);
+
+  const html = `<html><head><meta charset="utf-8"><style>@page{size:A4 ${land ? 'landscape' : 'portrait'};margin:10mm}body{font:13px Arial,'Noto Sans Thai',sans-serif}h1{margin:0;font-size:26px}table{width:100%;border-collapse:collapse;margin-top:10px}td,th{border:1px solid #888;padding:4px 6px;text-align:left}.s{color:#c00;font-weight:bold}</style></head><body><h1>${esc(o.lpn)}</h1><h2 style="margin:4px 0">${c.res === 'OK' ? 'CHECK 100% - COMPLETE' : 'BACK TO PICKING'}</h2>Store <b>${esc(o.store)}</b> · ${o.type} · Picker ${esc(o.picker)} · Checker ${esc(c.emp || '-')}<br>Checked ${new Date(c.ts).toLocaleString('en-GB')} · ${o.items.length} items · Total ${o.qty} cs<table><tr><th>#</th><th>Item</th><th>Description</th><th>Case</th><th>Result</th></tr>${o.items.map((i, k) => `<tr><td>${k + 1}</td><td>${esc(i.item)}</td><td>${esc(i.desc)}</td><td>${i.qty}</td><td class="${isShort(i.item, k) ? 's' : ''}">${isShort(i.item, k) ? 'SHORT' : 'OK'}</td></tr>`).join('')}</table></body></html>`;
+
+  const f = document.createElement('iframe');
+  f.style.cssText = 'position:fixed;width:0;height:0;border:0';
+  document.body.appendChild(f);
+  f.contentDocument.write(html);
+  f.contentDocument.close();
+  setTimeout(() => {
+    try { f.contentWindow.focus(); f.contentWindow.print(); }
+    catch (e) { alert('Printing is blocked here. Open the app from your GitHub Pages link.'); }
+  }, 300);
+  setTimeout(() => f.remove(), 60000);
+  c.printed = Date.now();
+  save();
+}
+
+function dash() {
+  const [a, b] = rng(), lp = latest();
+  const CK = S.checks.filter(c => c.grp === TY);
+  const OL = S.olpn.filter(o => o.grp === TY);
+  const sc = CK.filter(c => c.ts >= a && c.ts < b);
+  const sum = (x, f) => x.reduce((s, v) => s + f(v), 0);
+  const csC = sum(sc, c => c.qty);
+  const ok = sc.filter(c => c.res === 'OK');
+  const ret = sc.length - ok.length;
+  const live = Date.now() >= a && Date.now() < b;
+  const el = live ? Math.max(.25, (Date.now() - a) / 36e5) : 12;
+  const rate = csC / el, T = S.cfg.t;
+
+  const hrs = [...Array(12)].map((_, i) => {
+    const x = sc.filter(c => c.ts >= a + i * 36e5 && c.ts < a + (i + 1) * 36e5);
+    const o = x.filter(c => c.res === 'OK');
+    return { h: new Date(a + i * 36e5).getHours(), n: o.length, r: x.length - o.length, cc: sum(o, c => c.qty), ct: sum(x, c => c.qty) };
+  });
+
+  const mx = Math.max(T, ...hrs.map(h => h.ct), 1);
+  const left = OL.filter(o => !lp[o.lpn]);
+  const H = {};
+  CK.forEach(c => {
+    const d = new Date(c.ts), h = d.getHours(), n = h >= 8 && h < 20 ? 'Day' : 'Night';
+    if (h < 8) d.setDate(d.getDate() - 1);
+    const k = d.toLocaleDateString('en-GB') + '|' + n;
+    const e = H[k] || (H[k] = { d: k.split('|')[0], s: n, n: 0, r: 0, cc: 0, ct: 0, t: +d });
+    c.res === 'OK' ? (e.n++, e.cc += c.qty) : e.r++;
+    e.ct += c.qty;
+  });
+
+  const hist = Object.values(H).sort((x, y) => y.t - x.t || (x.s < y.s ? 1 : -1)).slice(0, 30);
+  const K = (l, v, s, c = '', u = '') => `<div class="k ${c === 'b' ? 'b' : ''}"><small>${l}</small><div class="v ${c === 'r' ? 'bad' : ''}">${v}<small style="font-size:14px"> ${u}</small></div><small>${s}</small></div>`;
+  const pct = v => `<span class="pill ${v >= 100 ? 'gr' : 'rd'}">${Math.round(v)}%</span>`;
+
+  $('t-dash').innerHTML = `
+    <div class="card row sp">
+      <b style="font-size:18px">${TN[TY]} · KPI</b>
+      <div class="row">
+        <input type="date" value="${S.cfg.d}" onchange="setc('d',this.value)">
+        <select onchange="setc('s',this.value)">
+          <option value="day" ${S.cfg.s === 'day' ? 'selected' : ''}>Day shift</option>
+          <option value="night" ${S.cfg.s === 'night' ? 'selected' : ''}>Night shift</option>
+        </select>
+        <span class="pill gr">${S.cfg.s === 'day' ? '08:00–20:00' : '20:00–08:00'}</span>
+        ${live ? '<span class="pill gr">● LIVE</span>' : ''}
+      </div>
+    </div>
+    <div class="card row">
+      Target CS/hr <input type="number" value="${T}" style="width:90px" onchange="setc('t',this.value)">
+      Headcount <input type="number" value="${S.cfg.h}" style="width:70px" onchange="setc('h',this.value)"> ppl
+      <button class="pri" onclick="xl()" style="margin-left:auto">Export Excel</button>
+    </div>
+    <div class="grid">
+      ${K('CS / hour (this shift)', Math.round(rate), 'Target ' + T + ' · ' + Math.round(rate / T * 100) + '%', 'b', 'CS')}
+      ${K('CS / person / hour', (rate / S.cfg.h).toFixed(1), 'from ' + S.cfg.h + ' ppl', '', 'CS')}
+      ${K('Outbound labels checked', sc.length, 'avg ' + (sc.length / el).toFixed(1) + ' labels/h', '', 'labels')}
+      ${K('Cases checked', csC.toLocaleString(), 'Projected end of shift ' + Math.round(rate * 12).toLocaleString() + ' CS', '', 'CS')}
+      ${K('Complete – to Outbound', ok.length, 'first-pass ' + (sc.length ? Math.round(ok.length / sc.length * 100) : 0) + '%', '', 'labels')}
+      ${K('Back to Picking', ret, (sc.length ? (ret / sc.length * 100).toFixed(1) : 0) + '% of checked', ret ? 'r' : '', 'labels')}
+      ${K('Labels in file', OL.length, sum(OL, o => o.qty).toLocaleString() + ' CS', '', 'labels')}
+      ${K('Left to check', left.length, sum(left, o => o.qty).toLocaleString() + ' CS', '', 'labels')}
+    </div>
+    <div class="cols">
+      <div class="card">
+        <b>Hourly · this shift</b> <small class="mu">bars = cases (CS) · number = labels · red = back to picking</small>
+        <div class="chart" style="margin-top:10px">
+          ${hrs.map(h => `<div><small>${h.n + h.r || ''}</small><b style="height:${h.cc / mx * 120}px"></b>${h.ct > h.cc ? `<b class="r" style="height:${(h.ct - h.cc) / mx * 120}px"></b>` : ''}<span>${String(h.h).padStart(2, '0')}:00</span></div>`).join('')}
+          <span class="tg" style="bottom:${T / mx * 120 + 17}px"></span>
+        </div>
+        <div class="wrap">
+          <table>
+            <tr><th>Hour</th><th>Labels complete</th><th>Back</th><th>CS complete</th><th>CS total</th><th>% target</th></tr>
+            ${hrs.map(h => `<tr><td>${String(h.h).padStart(2, '0')}:00–${String((h.h + 1) % 24).padStart(2, '0')}:00</td><td class="ok">${h.n}</td><td class="bad">${h.r}</td><td>${h.cc.toLocaleString()}</td><td>${h.ct.toLocaleString()}</td><td>${pct(h.ct / T * 100)}</td></tr>`).join('')}
+            <tr><td><b>Total</b></td><td class="ok">${ok.length}</td><td class="bad">${ret}</td><td>${sum(ok, c => c.qty).toLocaleString()}</td><td>${csC.toLocaleString()}</td><td>${pct(csC / (T * 12) * 100)}</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <b>Latest checks</b>
+        <div style="max-height:520px;overflow:auto">
+          ${CK.slice(-30).reverse().map(c => `
+            <div class="row sp" style="padding:8px 0;border-bottom:1px solid var(--bd)">
+              <div>
+                <span class="pill ${c.res === 'OK' ? 'gr' : 'rd'}">${c.res === 'OK' ? '✓' : '↩'}</span>
+                <b class="mono">${esc(c.lpn)}</b><br>
+                <small class="mu">Store ${esc(c.store)} · ${c.items} items · ${c.res === 'OK' ? 'Complete' : 'Back to Picking'}</small>
+              </div>
+              <div style="text-align:right"><b>${c.qty}</b><br><small class="mu">${tm(c.ts)}</small></div>
+            </div>
+          `).join('') || '<span class="mu">No checks yet</span>'}
+        </div>
+      </div>
+    </div>
+    <div class="card wrap">
+      <b>History by shift</b>
+      <table>
+        <tr><th>Date</th><th>Shift</th><th>Labels complete</th><th>Back</th><th>CS complete</th><th>CS total</th><th>CS/h</th></tr>
+        ${hist.map(h => `<tr><td>${h.d}</td><td>${h.s}</td><td class="ok">${h.n}</td><td class="bad">${h.r}</td><td>${h.cc.toLocaleString()}</td><td>${h.ct.toLocaleString()}</td><td>${Math.round(h.ct / 12)}</td></tr>`).join('') || '<tr><td colspan="7" class="mu">No history</td></tr>'}
+      </table>
+    </div>
+    <small class="mu">Counted when: checker presses Save · Cases: sum of Qty (CS) · Shifts: Day 08:00–20:00, Night 20:00–08:00 · CS/person/h = CS per hour ÷ headcount</small>`;
+}
+
+function xl() {
+  ['XD', 'IMP', 'PTL'].forEach(g => pick(g));
+  if (CT === 'pk') pick(TY);
+  const lp = latest(), wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(S.checks.map(c => ({
+    ...c,
+    short: (c.short || []).join(','),
+    time: new Date(c.ts).toLocaleString('en-GB')
+  }))), 'Checks');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(S.olpn.filter(o => !lp[o.lpn]).map(o => ({
+    lpn: o.lpn, store: o.store, type: o.type, picker: o.picker, qty: o.qty
+  }))), 'Not checked');
+  for (const g in window._pk) {
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(window._pk[g].map(p => ({
+      picker: p.id,
+      labels: p.n,
+      cs: p.cs,
+      first: p.a < 1e20 ? new Date(p.a).toLocaleString('en-GB') : '',
+      last: p.b ? new Date(p.b).toLocaleString('en-GB') : '',
+      hours: +p.h.toFixed(2),
+      cs_per_hr: +p.r.toFixed(1)
+    }))), g + ' Pickers');
+  }
+  XLSX.writeFile(wb, 'PickCheck_' + new Date().toISOString().slice(0, 10) + '.xlsx');
+}
+
+/* ---------- Home Hub ---------- */
+const LOGO = "data:image/png;base64,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";
+
+function enter(t) {
+  TY = t;
+  S.cfg.t = S.cfg['t' + t] || 627;
+  S.cfg.h = S.cfg['h' + t] || 5;
+  S.cfg.pt = S.cfg['pt' + t] || 300;
+  FLT = 'all';
+  $('sq').value = '';
+  CUR = null;
+  $('res').innerHTML = '';
+  tab('scan');
+}
+
+function hub() {
+  TY = null;
+  const lp = latest(), td = new Date().setHours(0, 0, 0, 0);
+  let tp = 0, tc = 0;
+  const LN = [
+    ['XD', 'var(--blue,#0072ce)', 'Cross-dock manual picking', 'L890… manual-pick labels'],
+    ['IMP', '#e88b00', 'Import manual picking', 'OFS… manual-pick labels'],
+    ['PTL', '#dc2331', 'Put-to-light pallets', 'S… put-to-light pallets']
+  ];
+  const rows = LN.map(l => {
+    const L = S.olpn.filter(o => o.grp === l[0]);
+    const dn = L.filter(o => lp[o.lpn]).length;
+    const tk = S.checks.filter(k => k.grp === l[0] && k.ts >= td).length;
+    tp += L.length - dn;
+    tc += tk;
+    return `
+      <div class="lane" style="--lc:${l[1]}" onclick="enter('${l[0]}')">
+        <div class="dr">${l[0]}</div>
+        <div>
+          <b style="font-size:19px">${TN[l[0]]}</b>
+          <div class="mu">${l[2]} · ${l[3]}</div>
+          <div class="bar" style="margin:10px 0 4px"><i style="width:${L.length ? dn / L.length * 100 : 0}%;background:${l[1]}"></i></div>
+          <small class="mu">${dn} of ${L.length} labels checked · <b>${L.length - dn}</b> pending · <b>${tk}</b> checked today</small>
+        </div>
+        <button class="go">Start check →</button>
+      </div>`;
+  }).join('');
+
+  $('t-home').innerHTML = `
+    <div class="hubw">
+      <div class="side">
+        <div class="lg"><img src="${LOGO}" alt="CJ Logistics"></div>
+        <div class="card" style="margin-top:12px">
+          <small class="mu">CDC · PICK CHECK 100</small>
+          <div class="clk" id="hclk"></div>
+          <div class="mini">
+            <div><small class="mu">Pending labels</small><b>${tp}</b></div>
+            <div><small class="mu">Checked today</small><b class="ok">${tc}</b></div>
+          </div>
+          <div class="pill gr" style="margin-top:10px;display:inline-block">● Offline / Local</div>
+          <button class="big" onclick="tab('up')">⇪ Import data &amp; backup</button>
+        </div>
+        <p class="mu" style="text-align:center;font-size:12px">CJ IT · CDC</p>
+      </div>
+      <div>
+        <h2 style="margin:4px 0 12px">Choose a check</h2>
+        ${rows}
+        <p class="mu">Each check has its own scan, status, hourly KPI and print sheet.</p>
+      </div>
+    </div>`;
+  clk();
+}
+
+const clk = () => {
+  const e = $('hclk');
+  if (e) {
+    const n = new Date();
+    e.innerHTML = '<span style="font-size:24px">' + n.toLocaleTimeString('en-GB') + '</span><br>' +
+      n.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+  }
+};
+setInterval(clk, 1000);
+
+restore(() => {
+  const n = new Date(), h = n.getHours();
+  if (h < 8) n.setDate(n.getDate() - 1);
+  S.cfg.d = n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0') + '-' + String(n.getDate()).padStart(2, '0');
+  S.cfg.s = h >= 8 && h < 20 ? 'day' : 'night';
+  if (S.olpn.length) {
+    $('st-olpn').textContent = S.olpn.length + ' labels loaded · ' + (S.up.olpn || '');
+  }
+  $('pl').value = S.cfg.pl || 'landscape';
+  tab('home');
+});
+
+setInterval(() => {
+  if ($('t-dash').classList.contains('on')) dash();
+}, 60000);
+</script>
+</body>
+</html>
